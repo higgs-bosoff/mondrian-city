@@ -1,53 +1,47 @@
 // Colors
 var bkg_col = '#111111';
+var road_color = '#ecece1';
 
-// Create backgroud
-var bkg = new Rect(0, 0, stage.options.width, stage.options.height)
-    .fill(bkg_col)
-    .addTo(stage);
+var Game = function(svg) {
 
-// Camera class
-var Camera = function(world, worldW, worldH, stageW, stageH) {
+    this.svg = svg;
 
-    this.world = world;
-    this.wW = worldW;
-    this.wH = worldH;
-    this.sW = stageW;
-    this.sH = stageH;
-    this.posX = worldW / 2.0;
-    this.posY = worldH / 2.0;
-    this.scaleX = 1;
-    this.scaleY = 1;
+    // Create background
+    this.vBox = this.svg.attr('viewBox');
+    this.bkg = this.svg.rect(this.vBox.x, this.vBox.y,
+        this.vBox.w, this.vBox.h);
+
+    // Create World group
+    this.world = this.svg.group().attr('id', 'world-g');
+    // And UI
+    this.ui = this.svg.group().attr('id', 'ui-g');
+
+    this.camera = new Camera(this.world, this.vBox);
+    this.city = new City({
+        size: [40, 30],
+        cell: 5        
+    });
+
+    this.city.initRepr(this, function(c) {
+        var w = (c.size[0]+1)*c.cell;
+        var h = (c.size[1]+1)*c.cell;
+        var rect = c.game.svg.rect(-w/2.0, -h/2.0, w, h)
+                    .attr({
+                        'stroke': road_color,
+                        'stroke-width': c.cell,
+                        'fill': 'none'
+                    });
+        c.game.addToWorld(rect);
+    });
 }
 
-Camera.prototype = {
+Game.prototype = {
 
-    update: function() {
-        world.attr('matrix', new Matrix(this.scaleX, 0, 0, this.scaleY,
-            this.sW / 2 - this.posX, this.sH / 2 - this.posY));
+    addToWorld: function(el) {
+        this.world.append(el);
     },
 
-    translate: function(dx, dy) {
-        this.posX += dx;
-        this.posY += dy;
-        this.update();
+    addToUI: function(el) {
+        this.ui.append(el);
     }
-
 }
-
-// Create World group
-var world = new Group().addTo(stage);
-// And UI
-var ui = new Group().addTo(stage);
-
-new Circle(135, 300, 20).fill('blue').addTo(ui);
-new Circle(100, 300, 20).fill('red').addTo(world);
-
-var cam = new Camera(world, stage.options.width, stage.options.height,
-    stage.options.width, stage.options.height)
-
-/*
-setInterval(function() {
-    cam.translate(-1);
-}, 1000/30);
-*/
