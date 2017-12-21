@@ -37,7 +37,7 @@ City.prototype = {
         this._irmf = item_repr_move_f;
         this._irdf = item_repr_destroy_f;
 
-        this.repr = this._crcf(this);
+        this.repr = this._crcf();        
     },
 
     reprRoads: function() {

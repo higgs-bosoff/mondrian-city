@@ -14,9 +14,10 @@ var Camera = function(world, viewBox) {
 Camera.prototype = {
 
     update: function() {
-        this.world.attr('transform', new Snap.Matrix(this.scale, 0,
+        this.matrix = new Snap.Matrix(this.scale, 0,
             0, this.scale,
-            this.sW / 2 - this.posX, this.sH / 2 - this.posY));
+            this.sW / 2 - this.posX, this.sH / 2 - this.posY)
+        this.world.transform(this.matrix);
     },
 
     translate: function(dx, dy) {
